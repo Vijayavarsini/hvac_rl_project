@@ -145,3 +145,20 @@ print("================================\n")
 # Visualization
 # --------------------------
 plot_results(temps.tolist(), actions.tolist())
+
+# --------------------------
+# Energy over time visualization
+# --------------------------
+# Compute cumulative energy over time
+rl_energy_over_time = np.cumsum(np.abs(actions) * P_MAX * STEP_HOURS)
+full_on_energy_over_time = np.cumsum(np.abs(full_on_actions) * P_MAX * STEP_HOURS)
+
+plt.figure(figsize=(10,5))
+plt.plot(range(len(rl_energy_over_time)), rl_energy_over_time, label='RL HVAC', marker='o')
+plt.plot(range(len(full_on_energy_over_time)), full_on_energy_over_time, label='Full-time HVAC', marker='x')
+plt.xlabel('Timestep (hours)')
+plt.ylabel('Cumulative Energy Consumed (kWh)')
+plt.title('Cumulative Energy Consumption Over Time')
+plt.legend()
+plt.grid(True)
+plt.show()
