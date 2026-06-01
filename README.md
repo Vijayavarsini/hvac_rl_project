@@ -290,5 +290,6 @@ This project is licensed under the MIT License — see the [LICENSE](LICENSE) fi
 ## 👩‍💻 Author
 
 **Vruthula Shruthi GS** — [GitHub](https://github.com/vruthulashruthi) · [LinkedIn](https://linkedin.com/in/vruthula-shruthi-gs-647014286)
+**Vijayavarsini KJ**
 
 > *If you found this project useful, consider giving it a ⭐ — it helps others find it!*
