@@ -1,67 +1,86 @@
 # Smart HVAC Reinforcement Learning System
 
-A Reinforcement Learning (RL) based solution for optimizing Heating, Ventilation, and Air Conditioning (HVAC) control using Proximal Policy Optimization (PPO). This system balances indoor thermal comfort and energy efficiency by learning from weather data and simulated user feedback.
+A sophisticated Reinforcement Learning (RL) project using **Proximal Policy Optimization (PPO)** to optimize HVAC (Heating, Ventilation, and Air Conditioning) control. This system balances indoor thermal comfort against energy efficiency by learning from real-word weather data and adaptive occupant feedback.
 
-## Features
+## 🚀 Key Features
 
-- **Custom RL Environment**: Implements a `gymnasium` environment specifically for HVAC dynamics.
-- **Personalized Comfort**: Allows users to set preferred temperature ranges at runtime.
-- **Adaptive Feedback**: Simulates occupant feedback and automatically adjusts the target comfort range.
-- **Real-world Data**: Integrates with [OpenWeatherMap API](https://openweathermap.org/api) for external temperature forecasts.
-- **Comparative Analysis**: benchmarks RL performance against a baseline "full power" mode.
-- **Visualization**: Generates detailed plots of temperature, agent actions, and energy consumption.
+- **Custom Gymnasium Environment**: A first-principles thermal simulation environment ([envs/hvac_env.py](envs/hvac_env.py)).
+- **Hybrid Weather Data**: Integrates the **OpenWeatherMap API** for real-time forecasting, with a fallback to synthetic sine-wave modeling.
+- **Adaptive Personalization**: Learns occupant preferences through a feedback loop, dynamically shifting comfort bounds based on "too hot" or "too cold" signals.
+- **Energy-Aware Control**: Continuous action space control that minimizes power consumption while maintaining homeostasis.
+- **Comparative Benchmarking**: Direct analytics comparing RL performance against a "Full Power" baseline.
 
-## Project Structure
+## 🛠️ Technical Specifications
+
+### Reinforcement Learning Model
+- **Algorithm**: PPO (Stable-Baselines3)
+- **State Space (3-Dimensions)**:
+  - Inside Temperature (°C)
+  - Outside Temperature (°C)
+  - Time of Day (Normalized 0-1)
+- **Action Space**: Continuous control `[-1.0, 1.0]` (Negative: Cooling, Positive: Heating).
+
+### Thermal Physics Implementation
+The simulation uses a first-order thermal decay model with active HVAC influence:
+$$\Delta T = K_{leak}(T_{out} - T_{in}) + (A \times P_{max} \times \eta)$$
+where $K_{leak}$ is the thermal leakage coefficient and $\eta$ is the system efficiency.
+
+### Reward Function
+The agent is optimized via a composite reward signal:
+$$R = - (w_c \cdot \text{ComfortLoss} + w_e \cdot \text{EnergyLoss}) + \text{FeedbackReward}$$
+- **ComfortLoss**: Linear penalty for deviations from the dynamic target range.
+- **EnergyLoss**: Quadratic penalty on effort ($Action^2$).
+
+## 📁 Project Structure
 
 ```text
 hvac_rl_project/
-├── main.py              # Entry point for training and simulation
-├── plot_utils.py        # Utility functions for data visualization
-├── test_plot.py         # Test script for plotting functionality
+├── main.py              # Training loop, CLI, and Baseline comparison
+├── plot_utils.py        # Dual-axis visualization (Temp vs. HVAC Action)
+├── test_plot.py         # Unit testing for visualization components
 ├── envs/
-│   └── hvac_env.py      # Custom Gymnasium environment (HVACEnv)
-├── models/              # Directory for trained model checkpoints
-└── utils/               # General utility functions
+│   └── hvac_env.py      # Core HVACEnv class & Physics simulation
+├── models/              # Trained PPO checkpoints (.zip)
+└── utils/               # Shared helper functions
 ```
 
-## Setup and Installation
+## ⚙️ Installation
 
 ### Prerequisites
-
 - Python 3.8+
-- [OpenWeatherMap API Key](https://openweathermap.org/api) (required for real-time weather integration)
+- [OpenWeatherMap API Key](https://openweathermap.org/api) (Optional but recommended)
 
-### Installation
-
-1. Clone the repository and navigate to the project directory.
-2. Create and activate a virtual environment:
+### Setup
+1. **Clone & Virtual Env**:
    ```bash
    python -m venv venv
-   source venv/bin/activate  # On Windows: .\venv\Scripts\activate
+   .\venv\Scripts\activate  # Windows
+   # or source venv/bin/activate on Linux/Mac
    ```
-3. Install the required dependencies:
+2. **Install Dependencies**:
    ```bash
    pip install gymnasium stable-baselines3 matplotlib numpy requests torch
    ```
 
-## Usage
+## 📈 Usage
 
-1. **Configure API Key**: Add your OpenWeatherMap API key in `main.py` if you wish to use live forecasts.
-2. **Run the Simulation**:
+1. **Configure API**: Insert your `API_KEY` in `main.py` at line 55.
+2. **Execute**:
    ```bash
    python main.py
    ```
-3. **Training & Evaluation**:
-   - The script will prompt you for your comfort range (e.g., 20°C to 24°C).
-   - An RL agent will train for 20,000 steps.
-   - A 24-hour simulation will run, followed by a baseline comparison and performance visualization.
+3. **Flow**:
+   - Provide your initial comfort range (e.g., `19`, `23`).
+   - The agent trains for 20,000 steps (Configurable).
+   - Simulation runs for 24 hours.
+   - Comparison plots are displayed showing energy savings and temperature stability.
 
-## Performance Metrics
+## 📊 Analytics & Metrics
 
-The system evaluates performance based on:
-- **Time in Comfort**: Percentage of time the indoor temperature remained within the user's preferred range.
-- **Energy Efficiency**: Energy savings achieved compared to a non-intelligent baseline.
+The system tracks:
+- **Energy Savings %**: Kilowatt-hour reduction vs. baseline.
+- **Comfort Score**: Percentage of time within the target range.
+- **Mean Reward**: Training convergence metric.
 
-## License
-
+## 📜 License
 MIT License
